@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Voz Censurada - Menú de Inicio</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            font-family: 'Courier New', Courier, monospace; /* Fuente tipo retro */
+        }
+
+        #contenedor-juego {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            border: 2px solid #fff;
+        }
+
+        canvas { 
+            display: block;
+            image-rendering: pixelated; 
+        }
+
+        /* --- PANTALLA DE INICIO --- */
+        #menu-inicio {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Degradado de negro a un gris oscuro/claro */
+            background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 100%), 
+                        url('fondoi.jpeg'); /* La imagen de fondo detrás del degradado */
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start; /* Botones al lado izquierdo */
+            padding-left: 50px;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: white;
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px #ff0000;
+        }
+
+        .boton-menu {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            margin: 10px 0;
+            font-size: 20px;
+            cursor: pointer;
+            width: 200px;
+            text-align: left;
+            transition: 0.3s;
+        }
+
+        .boton-menu:hover {
+            background-color: white;
+            color: black;
+            transform: scale(1.05);
+        }
+
+        /* Ocultar el menú */
+        .oculto {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div id="contenedor-juego">
+    <div id="menu-inicio">
+        <h1>VOZ CENSURADA</h1>
+        <button class="boton-menu" onclick="comenzarJuego()">INICIAR PARTIDA</button>
+        <button class="boton-menu" onclick="abrirAjustes()">AJUSTES</button>
+    </div>
+
+    <canvas id="juego"></canvas>
+</div>
+
+<script>
+    const canvas = document.getElementById("juego");
+    const ctx = canvas.getContext("2d");
+    const menu = document.getElementById("menu-inicio");
+
+    canvas.width = 800;
+    canvas.height = 500;
+
+    // --- CARGA DE IMÁGENES ---
+    const imgFondo = new Image();
+    imgFondo.src = 'fondo.png'; 
+
+    const imgPersonaje = new Image();
+    imgPersonaje.src = 'personaje.png';
+
+    // --- LÓGICA DEL JUEGO ---
+    let juegoActivo = false;
+    let scrollFondo = 0;
+
+    const jugador = {
+        x: 100, y: 280, ancho: 150, alto: 150,
+        saltando: false, vy: 0, gravedad: 0.8
+    };
+
+    const teclas = {};
+    window.addEventListener("keydown", (e) => teclas[e.code] = true);
+    window.addEventListener("keyup", (e) => teclas[e.code] = false);
+
+    function comenzarJuego() {
+        menu.classList.add("oculto"); // Esconder el menú
+        juegoActivo = true;
+        bucle();
+    }
+
+    function abrirAjustes() {
+        alert("Configuración:");
+    }
+
+    function actualizar() {
+        if (!juegoActivo) return;
+
+        if (teclas["ArrowRight"]) scrollFondo -= 3;
+        if (teclas["ArrowLeft"]) scrollFondo += 3;
+
+        if (teclas["Space"] && !jugador.saltando) {
+            jugador.vy = -15;
+            jugador.saltando = true;
+        }
+
+        jugador.vy += jugador.gravedad;
+        jugador.y += jugador.vy;
+
+        if (jugador.y > 150) {
+            jugador.y = 159;
+            jugador.vy = 0;
+            jugador.saltando = false;
+        }
+    }
+
+    function dibujar() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        let xRelativa = scrollFondo % canvas.width;
+        ctx.drawImage(imgFondo, xRelativa, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRelativa + canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRelativa - canvas.width, 0, canvas.width, canvas.height);
+
+        ctx.drawImage(imgPersonaje, jugador.x, jugador.y, jugador.ancho, jugador.alto);
+    }
+
+    function bucle() {
+        if (juegoActivo) {
+            actualizar();
+            dibujar();
+            requestAnimationFrame(bucle);
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"> <!-- Define la codificación de caracteres (permite acentos y ñ) -->
+    <title>Voz Censurada - Menú de Inicio</title> <!-- Título que aparece en la pestaña del navegador -->
+
+    <style>
+        /* Estilos generales del cuerpo de la página */
+        body { 
+            margin: 0; /* Quita márgenes por defecto */
+            overflow: hidden; /* Oculta barras de desplazamiento */
+            background: #000; /* Fondo negro */
+            display: flex; /* Usa flexbox para centrar */
+            justify-content: center; /* Centrado horizontal */
+            align-items: center; /* Centrado vertical */
+            height: 100vh; /* Altura completa de la pantalla */
+            font-family: 'Courier New', Courier, monospace; /* Fuente tipo retro */
+        }
+
+        /* Contenedor principal del juego */
+        #contenedor-juego {
+            position: relative; /* Permite posicionar elementos dentro */
+            width: 800px;
+            height: 500px;
+            border: 2px solid #fff; /* Borde blanco */
+        }
+
+        /* Configuración del canvas */
+        canvas { 
+            display: block; /* Elimina espacios extra */
+            image-rendering: pixelated; /* Da estilo pixelado */
+        }
+
+        /* --- PANTALLA DE INICIO --- */
+        #menu-inicio {
+            position: absolute; /* Se superpone al canvas */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            
+            /* Fondo con degradado + imagen */
+            background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 100%), 
+                        url('fondoi.jpeg');
+
+            background-size: cover; /* Ajusta la imagen al tamaño */
+            display: flex;
+            flex-direction: column; /* Elementos en columna */
+            justify-content: center; /* Centrado vertical */
+            align-items: flex-start; /* Alineado a la izquierda */
+            padding-left: 50px;
+            z-index: 10; /* Se muestra encima del juego */
+            box-sizing: border-box;
+        }
+
+        /* Título del menú */
+        h1 {
+            color: white;
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px #ff0000; /* Sombra roja */
+        }
+
+        /* Botones del menú */
+        .boton-menu {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            margin: 10px 0;
+            font-size: 20px;
+            cursor: pointer;
+            width: 200px;
+            text-align: left;
+            transition: 0.3s; /* Animación suave */
+        }
+
+        /* Efecto al pasar el mouse */
+        .boton-menu:hover {
+            background-color: white;
+            color: black;
+            transform: scale(1.05); /* Aumenta tamaño */
+        }
+
+        /* Clase para ocultar elementos */
+        .oculto {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Contenedor del juego -->
+<div id="contenedor-juego">
+
+    <!-- Menú inicial -->
+    <div id="menu-inicio">
+        <h1>VOZ CENSURADA</h1>
+
+        <!-- Botón para iniciar el juego -->
+        <button class="boton-menu" onclick="comenzarJuego()">INICIAR PARTIDA</button>
+
+        <!-- Botón para abrir ajustes -->
+        <button class="boton-menu" onclick="abrirAjustes()">AJUSTES</button>
+    </div>
+
+    <!-- Canvas donde se dibuja el juego -->
+    <canvas id="juego"></canvas>
+</div>
+
+<script>
+    // Obtener el canvas y su contexto (para dibujar)
+    const canvas = document.getElementById("juego");
+    const ctx = canvas.getContext("2d");
+
+    // Obtener el menú
+    const menu = document.getElementById("menu-inicio");
+
+    // Tamaño del canvas
+    canvas.width = 800;
+    canvas.height = 500;
+
+    // --- CARGA DE IMÁGENES ---
+    const imgFondo = new Image(); // Imagen del fondo
+    imgFondo.src = 'fondo.png'; 
+
+    const imgPersonaje = new Image(); // Imagen del personaje
+    imgPersonaje.src = 'personaje.png';
+
+    // --- LÓGICA DEL JUEGO ---
+    let juegoActivo = false; // Controla si el juego está corriendo
+    let scrollFondo = 0; // Movimiento del fondo
+
+    // Objeto del jugador
+    const jugador = {
+        x: 100, y: 280, // Posición
+        ancho: 150, alto: 150, // Tamaño
+        saltando: false, // Estado de salto
+        vy: 0, // Velocidad vertical
+        gravedad: 0.8 // Fuerza de gravedad
+    };
+
+    // Objeto para detectar teclas presionadas
+    const teclas = {};
+
+    // Evento al presionar una tecla
+    window.addEventListener("keydown", (e) => teclas[e.code] = true);
+
+    // Evento al soltar una tecla
+    window.addEventListener("keyup", (e) => teclas[e.code] = false);
+
+    // Función para iniciar el juego
+    function comenzarJuego() {
+        menu.classList.add("oculto"); // Oculta el menú
+        juegoActivo = true; // Activa el juego
+        bucle(); // Inicia el bucle principal
+    }
+
+    // Función de ajustes
+    function abrirAjustes() {
+        alert("Configuración:"); // Muestra mensaje
+    }
+
+    // Actualiza la lógica del juego
+    function actualizar() {
+        if (!juegoActivo) return; // Si no está activo, no hace nada
+
+        // Movimiento del fondo
+        if (teclas["ArrowRight"]) scrollFondo -= 3;
+        if (teclas["ArrowLeft"]) scrollFondo += 3;
+
+        // Salto
+        if (teclas["Space"] && !jugador.saltando) {
+            jugador.vy = -15; // Impulso hacia arriba
+            jugador.saltando = true;
+        }
+
+        // Aplicar gravedad
+        jugador.vy += jugador.gravedad;
+        jugador.y += jugador.vy;
+
+        // Detectar suelo
+        if (jugador.y > 150) {
+            jugador.y = 159;
+            jugador.vy = 0;
+            jugador.saltando = false;
+        }
+    }
+
+    // Dibuja todo en pantalla
+    function dibujar() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpia el canvas
+
+        // Movimiento infinito del fondo
+        let xRelativa = scrollFondo % canvas.width;
+
+        ctx.drawImage(imgFondo, xRelativa, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRelativa + canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRelativa - canvas.width, 0, canvas.width, canvas.height);
+
+        // Dibujar personaje
+        ctx.drawImage(imgPersonaje, jugador.x, jugador.y, jugador.ancho, jugador.alto);
+    }
+
+    // Bucle principal del juego (se repite constantemente)
+    function bucle() {
+        if (juegoActivo) {
+            actualizar(); // Actualiza lógica
+            dibujar(); // Dibuja en pantalla
+            requestAnimationFrame(bucle); // Repite el ciclo
+        }
+    }
+</script>
+
+</body>
+</html>
