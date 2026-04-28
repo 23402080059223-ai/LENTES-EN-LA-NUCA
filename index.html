@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"> <!-- Define la codificación de caracteres (permite acentos y ñ) -->
+    <title>Voz Censurada - Menú de Inicio</title> <!-- Título que aparece en la pestaña del navegador -->
+<link rel="stylesheet" href="dialoejem.css">
+    <style>
+        /* Estilos generales del cuerpo de la página */
+        body { 
+            margin: 0; /* Quita márgenes por defecto */
+            overflow: hidden; /* Oculta barras de desplazamiento */
+            background: #000; /* Fondo negro */
+            display: flex; /* Usa flexbox para centrar */
+            justify-content: center; /* Centrado horizontal */
+            align-items: center; /* Centrado vertical */
+            height: 100vh; /* Altura completa de la pantalla */
+            font-family: 'Courier New', Courier, monospace; /* Fuente tipo retro */
+        }
+
+        /* Contenedor principal del juego */
+        #contenedor-juego {
+            position: relative; /* Permite posicionar elementos dentro */
+            width: 1000px;
+            height: 550px;
+            border: 2px solid #fff; /* Borde blanco */
+        }
+
+        /* Configuración del canvas */
+        canvas { 
+            display: block; /* Elimina espacios extra */
+            image-rendering: pixelated; /* Da estilo pixelado */
+        }
+
+
+/* --- PANTALLA DE INICIO --- */
+#menu-inicio {
+    position: absolute; /* Se superpone al canvas */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Sustitución de fondoi.jpeg por tu archivo GIF */
+    background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 100%), 
+                url('fondo.gif');
+
+    background-size: cover; /* Ajusta el GIF al tamaño del contenedor */
+    background-position: center; /* Centra el contenido del GIF */
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: flex-start; 
+    padding-left: 50px;
+    z-index: 10; 
+    box-sizing: border-box;
+}
+
+        /* Título del menú */
+        h1 {
+            color: white;
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px #ff0000; /* Sombra roja */
+        }
+
+        /* Botones del menú */
+        .boton-menu {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            margin: 10px 0;
+            font-size: 20px;
+            cursor: pointer;
+            width: 200px;
+            text-align: left;
+            transition: 0.3s; /* Animación suave */
+        }
+
+        /* Efecto al pasar el mouse */
+        .boton-menu:hover {
+            background-color: white;
+            color: black;
+            transform: scale(1.05); /* Aumenta tamaño */
+        }
+
+        /* Clase para ocultar elementos */
+        .oculto {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Contenedor del juego -->
+<div id="contenedor-juego">
+
+    <!-- Menú inicial -->
+    <div id="menu-inicio">
+        <h1>VOZ CENSURADA</h1>
+
+        <!-- Botón para iniciar el juego -->
+        <button class="boton-menu" onclick="comenzarJuego()">INICIAR PARTIDA</button>
+
+        <!-- Botón para abrir ajustes -->
+        <button class="boton-menu" onclick="abrirAjustes()">AJUSTES</button>
+    </div>
+
+    <div id="interaccion-aviso" class="oculto">Presiona [E] para hablar</div>
+
+    <div id="dialogueBox" class="dialogue-container oculto">
+        <div class="character-name" id="charName">Crono:</div>
+        <p class="message-text" id="typewriterText"></p>
+        <div class="next-arrow"></div>
+    </div>
+
+    <canvas id="juego"></canvas>
+</div>
+
+<script>
+    const canvas = document.getElementById("juego");
+    const ctx = canvas.getContext("2d");
+    const menu = document.getElementById("menu-inicio");
+    const avisoE = document.getElementById("interaccion-aviso");
+    const boxDialogo = document.getElementById("dialogueBox");
+    const textoDialogo = document.getElementById("typewriterText");
+
+    canvas.width = 1000;
+    canvas.height = 550;
+
+    // --- CARGA DE IMÁGENES ---
+    const imgFondo = new Image(); imgFondo.src = 'fondo.png'; 
+    const imgPersonaje = new Image(); imgPersonaje.src = 'claudia.png';
+
+    // --- LÓGICA ---
+    let juegoActivo = false;
+    let dialogoActivo = false;
+    let dialogoCompletado = false; // NUEVA: Para saber si ya hablamos con el personaje
+    let scrollFondo = 0;
+    let indexTexto = 0; 
+    const mensaje = "Eric, amigo mío. Un entrenador de tanto calibre merecía ver esto en primera fila.";
+
+    function typeWriter() {
+        if (indexTexto < mensaje.length) {
+            textoDialogo.innerHTML += mensaje.charAt(indexTexto);
+            indexTexto++;
+            setTimeout(typeWriter, 40);
+        }
+    }
+
+    // EVENTO: Al cerrar el diálogo, lo marcamos como completado
+    boxDialogo.addEventListener('click', () => {
+        boxDialogo.classList.add("oculto");
+        dialogoActivo = false;
+        dialogoCompletado = true; // Marcamos que ya se realizó la interacción
+        textoDialogo.innerHTML = "";
+        indexTexto = 0;
+    });
+
+    const jugador = {
+        x: 100, y: 230,
+        ancho: 200, alto: 200,
+        saltando: false, vy: 0, gravedad: 0.6
+    };
+
+    const teclas = {};
+    window.addEventListener("keydown", (e) => {
+        teclas[e.code] = true;
+        
+        // INTERACCIÓN CON LA TECLA E (Solo si no se ha completado antes)
+        if (e.code === "KeyE" && !avisoE.classList.contains("oculto") && !dialogoActivo && !dialogoCompletado) {
+            iniciarDialogo();
+        }
+    });
+    window.addEventListener("keyup", (e) => teclas[e.code] = false);
+
+    function comenzarJuego() {
+        menu.classList.add("oculto");
+        juegoActivo = true;
+        bucle();
+    }
+
+    function iniciarDialogo() {
+        dialogoActivo = true;
+        boxDialogo.classList.remove("oculto");
+        avisoE.classList.add("oculto"); 
+        typeWriter();
+    }
+
+    function actualizar() {
+        if (!juegoActivo || dialogoActivo) return;
+
+        if (teclas["ArrowRight"]) scrollFondo -= 5;
+        if (teclas["ArrowLeft"]) scrollFondo += 5;
+
+        // Lógica de "Zona de Interacción" mejorada
+        // Ahora solo muestra la [E] si el diálogo NO ha sido completado
+        if (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado) {
+            avisoE.classList.remove("oculto");
+        } else {
+            avisoE.classList.add("oculto");
+        }
+
+        // Salto y gravedad
+        if (teclas["Space"] && !jugador.saltando) {
+            jugador.vy = -15;
+            jugador.saltando = true;
+        }
+        jugador.vy += jugador.gravedad;
+        jugador.y += jugador.vy;
+
+        if (jugador.y > 230) {
+            jugador.y = 230;
+            jugador.vy = 0;
+            jugador.saltando = false;
+        }
+    }
+
+    function dibujar() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let xRelativa = scrollFondo % canvas.width;
+        ctx.drawImage(imgFondo, xRelativa, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRelativa + canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRelativa - canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgPersonaje, jugador.x, jugador.y, jugador.ancho, jugador.alto);
+    }
+
+    function bucle() {
+        actualizar();
+        dibujar();
+        requestAnimationFrame(bucle);
+    }
+</script>
+</body>
+</html>
