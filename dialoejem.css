@@ -1,0 +1,83 @@
+
+/* --- SISTEMA DE DIÁLOGO (ESTILO RPG) --- */
+.dialogue-container {
+    position: absolute;
+    bottom: 20px;
+    left: 65%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 140px;
+    background-color: #000; /* Fondo negro */
+    border: 4px solid #fdfdfd;  /* Borde blanco */
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 4px #8a8a8a; /* Borde doble gris */
+    padding: 25px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    cursor: pointer; /* AÑADIDO: Indica que el cuadro es interactivo para cerrarlo */
+}
+
+.character-name {
+    color: white;
+    font-size: 14px;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.message-text {
+    color: #fdfdfd;
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* --- ELEMENTOS DINÁMICOS --- */
+
+/* Aviso de "Presiona E" */
+#interaccion-aviso {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    background: rgba(0,0,0,0.8);
+    padding: 12px 20px;
+    font-size: 10px;
+    z-index: 25;
+    animation: blink 0.8s infinite;
+}
+
+/* Flecha de "Siguiente" dentro del diálogo */
+.next-arrow {
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 12px solid #777;
+    animation: bounce 0.6s infinite alternate;
+}
+
+/* Animaciones */
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(5px); }
+}
+
+@keyframes blink { 
+    0% { opacity: 1; } 
+    50% { opacity: 0.3; } 
+    100% { opacity: 1; } 
+}
+
+/* Utilidad para ocultar: Esta es la que hace que desaparezca cuando el script la activa */
+.oculto { 
+    display: none !important; 
+}
