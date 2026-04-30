@@ -127,6 +127,29 @@
             width: 100%;
             image-rendering: pixelated;
         }
+
+        /* --- ESTILOS DEL MINIJUEGO --- */
+        #capa-minijuego {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px; 
+            background: #1a1a1a;
+            border: 4px solid #00ff88;
+            padding: 20px;
+            z-index: 200;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        #timer-mini { width: 100%; height: 10px; background: #333; margin: 15px 0; border: 1px solid #fff; }
+        #bar-mini { width: 100%; height: 100%; background: #00ff88; transition: width 0.1s linear; }
+        #tecla-display { font-size: 50px; color: #fff; margin: 10px 0; }
+        #puntos-mini { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+        .punto { width: 12px; height: 12px; border-radius: 50%; background: #444; border: 1px solid #fff; }
+        .punto.lleno { background: #00ff88; }
+        #img-mini { width: 100%; height: 150px; object-fit: cover; border: 2px solid #fff; }
+
     </style>
 </head>
 
@@ -140,6 +163,17 @@
         <h1>VOZ CENSURADA</h1>
         <button class="boton-menu" onclick="comenzarJuego()">INICIAR PARTIDA</button>
         <button class="boton-menu" onclick="abrirAjustes()">AJUSTES</button>
+    </div>
+
+    <div id="capa-minijuego" class="oculto">
+        <div style="font-size: 10px; color: #00ff88;">ESTABLECIENDO CONEXIÓN...</div>
+        <div id="timer-mini"><div id="bar-mini"></div></div>
+        <div id="puntos-mini">
+            <div class="punto"></div><div class="punto"></div><div class="punto"></div><div class="punto"></div><div class="punto"></div>
+        </div>
+        <div id="tecla-display">?</div>
+        <img id="img-mini" src="https://picsum.photos/400/300?sig=1">
+        <div style="font-size: 8px; margin-top: 10px;">PROGRESO: <span id="img-count">0</span>/3</div>
     </div>
 
     <div id="pantalla-ajustes" class="oculto">
@@ -186,10 +220,24 @@
     const textoDialogo = document.getElementById("typewriterText");
     const btnVolverJuego = document.getElementById("btn-volver-juego");
 
-    // --- AGREGADO: GESTIÓN DE AUDIO ---
-    const musicaFondo = new Audio('feliz.mp3'); // Asegúrate que el archivo se llame musica.mp3
+    // --- AUDIO ---
+    const musicaFondo = new Audio('feliz.mp3'); 
     musicaFondo.loop = true;
     musicaFondo.volume = 0.5;
+
+    // --- VARIABLES MINIJUEGO ---
+    const capaMini = document.getElementById("capa-minijuego");
+    const teclaDisplay = document.getElementById("tecla-display");
+    const barMini = document.getElementById("bar-mini");
+    const imgMini = document.getElementById("img-mini");
+    const imgCountText = document.getElementById("img-count");
+    const puntosCirculo = document.querySelectorAll(".punto");
+
+    let miniActivo = false;
+    let letraActual = '';
+    let teclasLogradas = 0;
+    let imagenesLogradas = 0;
+    let tiempoMini = 100;
 
     function ajustarVolumen() {
         const vol = document.getElementById("slider-volumen").value;
@@ -225,13 +273,45 @@
         }
     }
 
+    // Al cerrar el diálogo, se activa el minijuego
     boxDialogo.addEventListener('click', () => {
         boxDialogo.classList.add("oculto");
         dialogoActivo = false;
         dialogoCompletado = true; 
         textoDialogo.innerHTML = "";
         indexTexto = 0;
+        iniciarMiniJuego(); // Lanzar minijuego
     });
+
+    // --- FUNCIONES DEL MINIJUEGO ---
+    function iniciarMiniJuego() {
+        capaMini.classList.remove("oculto");
+        miniActivo = true;
+        teclasLogradas = 0;
+        imagenesLogradas = 0;
+        nuevaLetra();
+        bucleTimerMini();
+    }
+
+    function nuevaLetra() {
+        const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        letraActual = abc[Math.floor(Math.random() * abc.length)];
+        teclaDisplay.innerText = letraActual;
+    }
+
+    function bucleTimerMini() {
+        if (!miniActivo) return;
+        tiempoMini -= 0.6; 
+        barMini.style.width = tiempoMini + "%";
+
+        if (tiempoMini <= 0) {
+            miniActivo = false;
+            alert("CONEXIÓN INTERRUMPIDA");
+            location.reload();
+        } else {
+            requestAnimationFrame(bucleTimerMini);
+        }
+    }
 
     const jugador = {
         x: 100, y: 230,
@@ -242,14 +322,44 @@
     const teclas = {};
     window.addEventListener("keydown", (e) => {
         teclas[e.code] = true;
+        
+        // Hablar con E
         if (e.code === "KeyE" && !avisoE.classList.contains("oculto") && !dialogoActivo && !dialogoCompletado) {
             iniciarDialogo();
         }
+
+        // Lógica de entrada del minijuego
+        if (miniActivo) {
+            let letraPresionada = e.key.toUpperCase();
+            if (letraPresionada === letraActual) {
+                teclasLogradas++;
+                tiempoMini = 100;
+                
+                if (teclasLogradas === 5) {
+                    imagenesLogradas++;
+                    teclasLogradas = 0;
+                    imgCountText.innerText = imagenesLogradas;
+                    imgMini.src = `https://picsum.photos/400/300?sig=${Math.random()}`;
+                    
+                    if (imagenesLogradas === 3) {
+                        miniActivo = false;
+                        capaMini.classList.add("oculto");
+                        alert("¡ACCESO CONCEDIDO!");
+                    }
+                }
+                
+                puntosCirculo.forEach((p, i) => {
+                    p.classList.toggle("lleno", i < teclasLogradas);
+                });
+                nuevaLetra();
+            }
+        }
     });
+
     window.addEventListener("keyup", (e) => teclas[e.code] = false);
 
     function abrirAjustes() {
-        reproducirMusica(); // Intenta activar audio al entrar a ajustes
+        reproducirMusica();
         menu.classList.add("oculto");
         ajustes.classList.remove("oculto");
     }
@@ -265,7 +375,7 @@
     }
 
     function comenzarJuego() {
-        reproducirMusica(); // Inicia música al empezar
+        reproducirMusica();
         menu.classList.add("oculto");
         btnVolverJuego.classList.remove("oculto"); 
         juegoActivo = true;
@@ -281,7 +391,6 @@
         dialogoActivo = false;
         textoDialogo.innerHTML = "";
         indexTexto = 0;
-
         scrollFondo = 0;
     }
 
@@ -307,11 +416,15 @@
     }
 
     function actualizar() {
-        if (!juegoActivo || dialogoActivo) return;
+        if (!juegoActivo || dialogoActivo || miniActivo) return;
         let estaMoviendose = false;
         
         if (teclas["ArrowRight"]) { 
             scrollFondo -= 5; 
+            estaMoviendose = true; 
+        }
+        if (teclas["ArrowLeft"]) { 
+            scrollFondo += 5; 
             estaMoviendose = true; 
         }
 
@@ -328,7 +441,7 @@
             avisoE.classList.add("oculto");
         }
 
-        if (teclas["PageUp"] && !jugador.saltando) {
+        if (teclas["Space"] && !jugador.saltando) {
             jugador.vy = -15;
             jugador.saltando = true;
         }
