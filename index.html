@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Voz Censurada - Menú de Inicio</title>
+    <title>Voz Censurada</title>
     <link rel="stylesheet" href="dialoejem.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
@@ -348,6 +348,13 @@
                 retratoActual = "ericicon.png"; // Asegúrate de tener esta imagen o usa clauicon.png para probar
                 iniciarDialogo();
             }
+             // ZONA 3: NUEVO PERSONAJE / INTERACCIÓN
+            else if (scrollFondo < -2300 && scrollFondo > -2600) {
+                personajeActual = "Eric:";
+                mensajeActual = "Papaloteee... Ya te vi Papalote";
+                retratoActual = "ericicon.png"; // Asegúrate de tener esta imagen o usa clauicon.png para probar
+                iniciarDialogo();
+            }
         }
 
         if (miniActivo) {
@@ -461,8 +468,9 @@
         // CONTROL DE SEÑALES DE INTERACCIÓN
         const zona1 = (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado);
         const zona2 = (scrollFondo < -1300 && scrollFondo > -1600);
+        const zona3 = (scrollFondo < -2300 && scrollFondo > -2600);
 
-        if (zona1 || zona2) {
+        if (zona1 || zona2 || zona3) {
             avisoE.classList.remove("oculto");
         } else {
             avisoE.classList.add("oculto");
