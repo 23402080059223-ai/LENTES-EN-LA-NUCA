@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Voz Censurada - Menú de Inicio</title>
+    <title>Voz Censurada - Juego Completo</title>
     <link rel="stylesheet" href="dialoejem.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
@@ -31,21 +31,14 @@
 
         #menu-inicio {
             position: absolute; 
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 100%), 
                         url('fondo.gif');
             background-size: cover; 
             background-position: center; 
-            display: flex;
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: flex-start; 
-            padding-left: 50px;
-            z-index: 10; 
-            box-sizing: border-box;
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: flex-start; 
+            padding-left: 50px; z-index: 10; box-sizing: border-box;
         }
 
         h1 { color: white; font-size: 35px; text-shadow: 4px 4px #ff0000; margin-bottom: 40px; }
@@ -59,97 +52,55 @@
 
         .boton-menu:hover { background: white; color: black; transform: translateX(10px); }
 
+        /* Pantalla Ajustes */
         #pantalla-ajustes {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.7) 80%, rgba(0,0,0,0.7) 100%), 
-                        url('fondo.gif');
-            background-size: cover; 
-            background-position: center; 
-            display: flex; justify-content: center; align-items: center;
-            z-index: 50;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 50;
         }
 
         .ajustes-box {
-            width: 500px; height:200px ; background-color: #000; padding: 30px;
-            border: 4px solid #fdfdfd; border-radius: 4px;
-            box-shadow: inset 0 0 0 4px #4a4a4a; 
-            position: relative;
+            width: 500px; background-color: #000; padding: 30px;
+            border: 4px solid #fdfdfd; position: relative;
         }
-
-        .ajustes-box h2 { color: #ff0000; font-size: 16px; text-align: center; margin-bottom: 25px; }
 
         .opcion-ajuste {
             display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 20px; color: white; font-size: 10px;
         }
 
-        .oculto { display: none !important; }
-
-        .boton-volver-fuera {
-            position: absolute;
-            top: 30px; 
-            left: 30px; 
-            background: transparent;
-            color: white;
-            border: 3px solid white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 10px;
-            z-index: 60; 
-            transform: scaleX(-1); 
-            transition: 0.3s;
-            line-height: 1;
-        }
-
-        .boton-volver-fuera:hover {
-            background: white;
-            color: black;
-            transform: scaleX(-1) scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-        }
-
-        .retrato-contenedor {
-            position: absolute;
-            bottom: 140px; 
-            left: 470px;
-            width: 120px;
-            height: 120px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid white;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            z-index: 100;
-        }
-
-        .retrato-img {
-            width: 100%;
-            image-rendering: pixelated;
-        }
-
-        /* --- ESTILOS DEL MINIJUEGO --- */
+        /* Minijuego Hackeo */
         #capa-minijuego {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px; 
-            background: #1a1a1a;
-            border: 4px solid #00ff88;
-            padding: 20px;
-            z-index: 200;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 400px; background: #1a1a1a; border: 4px solid #00ff88;
+            padding: 20px; z-index: 200; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
 
-        #timer-mini { width: 100%; height: 10px; background: #333; margin: 15px 0; border: 1px solid #fff; }
-        #bar-mini { width: 100%; height: 100%; background: #00ff88; transition: width 0.1s linear; }
+        #timer-mini { width: 100%; height: 10px; background: #333; margin: 15px 0; }
+        #bar-mini { width: 100%; height: 100%; background: #00ff88; }
         #tecla-display { font-size: 50px; color: #fff; margin: 10px 0; }
         #puntos-mini { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
         .punto { width: 12px; height: 12px; border-radius: 50%; background: #444; border: 1px solid #fff; }
         .punto.lleno { background: #00ff88; }
         #img-mini { width: 100%; height: 150px; object-fit: cover; border: 2px solid #fff; }
 
+        /* Diálogo */
+        .retrato-contenedor {
+            position: absolute; bottom: 140px; left: 470px;
+            width: 120px; height: 120px; background: rgba(0, 0, 0, 0.8);
+            border: 3px solid white; z-index: 100; display: flex; justify-content: center;
+        }
+        .retrato-img { width: 100%; image-rendering: pixelated; }
+
+        .oculto { display: none !important; }
+        #interaccion-aviso {
+            position: absolute; top: 150px; width: 100%; text-align: center;
+            color: white; font-size: 12px; text-shadow: 2px 2px black; z-index: 5;
+        }
+        .boton-volver-fuera {
+            position: absolute; top: 30px; left: 30px; background: transparent;
+            color: white; border: 3px solid white; font-size: 24px; cursor: pointer;
+            z-index: 60; transform: scaleX(-1);
+        }
     </style>
 </head>
 
@@ -166,7 +117,7 @@
     </div>
 
     <div id="capa-minijuego" class="oculto">
-        <div style="font-size: 10px; color: #00ff88;">ESTABLECIENDO CONEXIÓN...</div>
+        <div style="font-size: 10px; color: #00ff88;">HACKEANDO TERMINAL...</div>
         <div id="timer-mini"><div id="bar-mini"></div></div>
         <div id="puntos-mini">
             <div class="punto"></div><div class="punto"></div><div class="punto"></div><div class="punto"></div><div class="punto"></div>
@@ -178,9 +129,8 @@
 
     <div id="pantalla-ajustes" class="oculto">
         <button class="boton-volver-fuera" onclick="cerrarAjustes()">&#10140;</button>
-
         <div class="ajustes-box">
-            <h2>AJUSTES DE SISTEMA</h2>
+            <h2 style="color:red; text-align:center;">AJUSTES</h2>
             <div class="opcion-ajuste">
                 <span>VOLUMEN</span>
                 <input type="range" id="slider-volumen" min="0" max="100" value="50" oninput="ajustarVolumen()">
@@ -190,13 +140,13 @@
                 <input type="range" id="rango-brillo" min="50" max="150" value="100" oninput="ajustarBrillo()">
             </div>
             <div class="opcion-ajuste">
-                <span>PANTALLA COMPLETA</span>
-                <button id="btnFullscreen" onclick="toggleFullscreen()" style="font-family:'Press Start 2P'; font-size: 8px; padding: 5px; cursor: pointer;">OFF</button>
+                <span>FULLSCREEN</span>
+                <button id="btnFullscreen" onclick="toggleFullscreen()">OFF</button>
             </div> 
         </div> 
     </div>
 
-    <div id="interaccion-aviso" class="oculto">Presiona [E] para hablar</div>
+    <div id="interaccion-aviso" class="oculto">Presiona [E] para interactuar</div>
 
     <div id="dialogueBox" class="dialogue-container oculto">
         <div id="retrato" class="retrato-contenedor">
@@ -220,12 +170,11 @@
     const textoDialogo = document.getElementById("typewriterText");
     const btnVolverJuego = document.getElementById("btn-volver-juego");
 
-    // --- AUDIO ---
-    const musicaFondo = new Audio('feliz.mp3'); 
+    // Audio
+    const musicaFondo = new Audio('feliz.mp3');
     musicaFondo.loop = true;
-    musicaFondo.volume = 0.5;
 
-    // --- VARIABLES MINIJUEGO ---
+    // Minijuego
     const capaMini = document.getElementById("capa-minijuego");
     const teclaDisplay = document.getElementById("tecla-display");
     const barMini = document.getElementById("bar-mini");
@@ -239,15 +188,6 @@
     let imagenesLogradas = 0;
     let tiempoMini = 100;
 
-    function ajustarVolumen() {
-        const vol = document.getElementById("slider-volumen").value;
-        musicaFondo.volume = vol / 100;
-    }
-
-    function reproducirMusica() {
-        musicaFondo.play().catch(error => console.log("Esperando interacción para audio"));
-    }
-
     canvas.width = 1000;
     canvas.height = 550;
 
@@ -257,7 +197,6 @@
     const imgPaso2 = new Image(); imgPaso2.src = 'clauderechamov.png';
     
     let imgPersonajeActual = imgQuieta; 
-
     let juegoActivo = false;
     let dialogoActivo = false;
     let dialogoCompletado = false; 
@@ -273,17 +212,16 @@
         }
     }
 
-    // Al cerrar el diálogo, se activa el minijuego
     boxDialogo.addEventListener('click', () => {
         boxDialogo.classList.add("oculto");
         dialogoActivo = false;
         dialogoCompletado = true; 
         textoDialogo.innerHTML = "";
         indexTexto = 0;
-        iniciarMiniJuego(); // Lanzar minijuego
+        iniciarMiniJuego(); 
     });
 
-    // --- FUNCIONES DEL MINIJUEGO ---
+    // Lógica Hackeo
     function iniciarMiniJuego() {
         capaMini.classList.remove("oculto");
         miniActivo = true;
@@ -303,54 +241,50 @@
         if (!miniActivo) return;
         tiempoMini -= 0.6; 
         barMini.style.width = tiempoMini + "%";
-
         if (tiempoMini <= 0) {
             miniActivo = false;
-            alert("CONEXIÓN INTERRUMPIDA");
+            alert("SISTEMA BLOQUEADO");
             location.reload();
         } else {
             requestAnimationFrame(bucleTimerMini);
         }
     }
 
-    const jugador = {
-        x: 100, y: 230,
-        ancho: 200, alto: 200,
-        saltando: false, vy: 0, gravedad: 0.6
-    };
-
+    const jugador = { x: 100, y: 230, ancho: 200, alto: 200, saltando: false, vy: 0, gravedad: 0.6 };
     const teclas = {};
+
     window.addEventListener("keydown", (e) => {
         teclas[e.code] = true;
         
-        // Hablar con E
-        if (e.code === "KeyE" && !avisoE.classList.contains("oculto") && !dialogoActivo && !dialogoCompletado) {
-            iniciarDialogo();
+        // INTERACCIÓN CON E
+        if (e.code === "KeyE" && !avisoE.classList.contains("oculto")) {
+            // Zona Claudia
+            if (scrollFondo < -300 && scrollFondo > -600 && !dialogoActivo && !dialogoCompletado) {
+                iniciarDialogo();
+            } 
+            // Zona Nueva Señal
+            else if (scrollFondo < -1300 && scrollFondo > -1600) {
+                alert("Has encontrado un terminal secundario inactivo.");
+            }
         }
 
-        // Lógica de entrada del minijuego
         if (miniActivo) {
-            let letraPresionada = e.key.toUpperCase();
-            if (letraPresionada === letraActual) {
+            let p = e.key.toUpperCase();
+            if (p === letraActual) {
                 teclasLogradas++;
                 tiempoMini = 100;
-                
                 if (teclasLogradas === 5) {
                     imagenesLogradas++;
                     teclasLogradas = 0;
                     imgCountText.innerText = imagenesLogradas;
                     imgMini.src = `https://picsum.photos/400/300?sig=${Math.random()}`;
-                    
                     if (imagenesLogradas === 3) {
                         miniActivo = false;
                         capaMini.classList.add("oculto");
-                        alert("¡ACCESO CONCEDIDO!");
+                        alert("HACKEO EXITOSO");
                     }
                 }
-                
-                puntosCirculo.forEach((p, i) => {
-                    p.classList.toggle("lleno", i < teclasLogradas);
-                });
+                puntosCirculo.forEach((pt, i) => pt.classList.toggle("lleno", i < teclasLogradas));
                 nuevaLetra();
             }
         }
@@ -358,24 +292,17 @@
 
     window.addEventListener("keyup", (e) => teclas[e.code] = false);
 
-    function abrirAjustes() {
-        reproducirMusica();
-        menu.classList.add("oculto");
-        ajustes.classList.remove("oculto");
+    function abrirAjustes() { 
+        musicaFondo.play().catch(()=>{}); 
+        menu.classList.add("oculto"); 
+        ajustes.classList.remove("oculto"); 
     }
-    function cerrarAjustes() {
-        ajustes.classList.add("oculto");
-        menu.classList.remove("oculto");
-    }
-    
-    function ajustarBrillo() {
-        const valorBrillo = document.getElementById("rango-brillo").value;
-        const contenedor = document.getElementById("contenedor-juego");
-        contenedor.style.filter = `brightness(${valorBrillo}%)`;
-    }
+    function cerrarAjustes() { ajustes.classList.add("oculto"); menu.classList.remove("oculto"); }
+    function ajustarVolumen() { musicaFondo.volume = document.getElementById("slider-volumen").value / 100; }
+    function ajustarBrillo() { document.getElementById("contenedor-juego").style.filter = `brightness(${document.getElementById("rango-brillo").value}%)`; }
 
     function comenzarJuego() {
-        reproducirMusica();
+        musicaFondo.play().catch(()=>{});
         menu.classList.add("oculto");
         btnVolverJuego.classList.remove("oculto"); 
         juegoActivo = true;
@@ -384,13 +311,8 @@
 
     function volverAlMenu() {
         juegoActivo = false;
-        btnVolverJuego.classList.add("oculto"); 
-        menu.classList.remove("oculto"); 
-        
-        boxDialogo.classList.add("oculto");
-        dialogoActivo = false;
-        textoDialogo.innerHTML = "";
-        indexTexto = 0;
+        btnVolverJuego.classList.add("oculto");
+        menu.classList.remove("oculto");
         scrollFondo = 0;
     }
 
@@ -402,65 +324,51 @@
     }
 
     function toggleFullscreen() {
-        const doc = document.documentElement;
-        const btn = document.getElementById("btnFullscreen");
-        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (doc.requestFullscreen) doc.requestFullscreen();
-            else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
-            btn.innerText = "ON";
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+            document.getElementById("btnFullscreen").innerText = "ON";
         } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-            btn.innerText = "OFF";
+            document.exitFullscreen();
+            document.getElementById("btnFullscreen").innerText = "OFF";
         }
     }
 
     function actualizar() {
         if (!juegoActivo || dialogoActivo || miniActivo) return;
-        let estaMoviendose = false;
         
-        if (teclas["ArrowRight"]) { 
-            scrollFondo -= 5; 
-            estaMoviendose = true; 
-        }
-        if (teclas["ArrowLeft"]) { 
-            scrollFondo += 5; 
-            estaMoviendose = true; 
-        }
+        let moviendo = false;
+        if (teclas["ArrowRight"]) { scrollFondo -= 5; moviendo = true; }
+        if (teclas["ArrowLeft"]) { scrollFondo += 5; moviendo = true; }
 
-        if (estaMoviendose) {
-            if (Math.floor(Date.now() / 150) % 2 === 0) imgPersonajeActual = imgPaso1;
-            else imgPersonajeActual = imgPaso2;
+        if (moviendo) {
+            imgPersonajeActual = (Math.floor(Date.now() / 150) % 2 === 0) ? imgPaso1 : imgPaso2;
         } else {
             imgPersonajeActual = imgQuieta;
         }
 
-        if (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado) {
+        // Lógica de Aparición de Señales
+        const enZona1 = (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado);
+        const enZona2 = (scrollFondo < -1300 && scrollFondo > -1600); // Distancia prudente
+
+        if (enZona1 || enZona2) {
             avisoE.classList.remove("oculto");
         } else {
             avisoE.classList.add("oculto");
         }
 
-        if (teclas["Space"] && !jugador.saltando) {
-            jugador.vy = -15;
-            jugador.saltando = true;
-        }
+        // Salto
+        if (teclas["Space"] && !jugador.saltando) { jugador.vy = -15; jugador.saltando = true; }
         jugador.vy += jugador.gravedad;
         jugador.y += jugador.vy;
-
-        if (jugador.y > 230) {
-            jugador.y = 230;
-            jugador.vy = 0;
-            jugador.saltando = false;
-        }
+        if (jugador.y > 230) { jugador.y = 230; jugador.vy = 0; jugador.saltando = false; }
     }
 
     function dibujar() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        let xRelativa = scrollFondo % canvas.width;
-        ctx.drawImage(imgFondo, xRelativa, 0, canvas.width, canvas.height);
-        ctx.drawImage(imgFondo, xRelativa + canvas.width, 0, canvas.width, canvas.height);
-        ctx.drawImage(imgFondo, xRelativa - canvas.width, 0, canvas.width, canvas.height);
+        let xRel = scrollFondo % canvas.width;
+        ctx.drawImage(imgFondo, xRel, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRel + canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondo, xRel - canvas.width, 0, canvas.width, canvas.height);
         ctx.drawImage(imgPersonajeActual, jugador.x, jugador.y, jugador.ancho, jugador.alto);
     }
 
