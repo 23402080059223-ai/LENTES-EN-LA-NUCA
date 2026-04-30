@@ -109,10 +109,9 @@
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
-        /* --- ESTILOS PARA EL RETRATO --- */
         .retrato-contenedor {
             position: absolute;
-            bottom: 160px; /* Ajusta según la altura de tu caja de diálogo */
+            bottom: 160px;
             left: 50px;
             width: 120px;
             height: 120px;
@@ -121,15 +120,40 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            overflow: hidden; /* Corta el resto del cuerpo */
+            overflow: hidden;
             z-index: 100;
         }
 
         .retrato-img {
-            width: 300px; /* Escalamos la imagen para que la cara se vea grande */
+            width: 300px;
             image-rendering: pixelated;
-            margin-top: -30px; /* Movemos la imagen hacia arriba para enfocar la cara */
+            margin-top: -30px;
         }
+
+        /* --- NUEVOS ESTILOS PARA EL MINIJUEGO SOBREPUESTO --- */
+        #capa-minijuego {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px; 
+            background: #1a1a1a;
+            border: 4px solid #00ff88;
+            padding: 20px;
+            z-index: 200;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        #timer-mini { width: 100%; height: 10px; background: #333; margin: 15px 0; border: 1px solid #fff; }
+        #bar-mini { width: 100%; height: 100%; background: #00ff88; transition: width 0.1s linear; }
+        
+        #tecla-display { font-size: 50px; color: #fff; margin: 10px 0; }
+        
+        #puntos-mini { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+        .punto { width: 12px; height: 12px; border-radius: 50%; background: #444; border: 1px solid #fff; }
+        .punto.lleno { background: #00ff88; }
+
+        #img-mini { width: 100%; height: 150px; object-fit: cover; border: 2px solid #fff; }
     </style>
 </head>
 
@@ -145,9 +169,19 @@
         <button class="boton-menu" onclick="abrirAjustes()">AJUSTES</button>
     </div>
 
+    <div id="capa-minijuego" class="oculto">
+        <div style="font-size: 10px; color: #00ff88;">Preciona las teclas que aparen en pantalla</div>
+        <div id="timer-mini"><div id="bar-mini"></div></div>
+        <div id="puntos-mini">
+            <div class="punto"></div><div class="punto"></div><div class="punto"></div><div class="punto"></div><div class="punto"></div>
+        </div>
+        <div id="tecla-display">?</div>
+        <img id="img-mini" src="https://picsum.photos/400/300?sig=1">
+        <div style="font-size: 8px; margin-top: 10px;">PROGRESO: <span id="img-count">0</span>/3</div>
+    </div>
+
     <div id="pantalla-ajustes" class="oculto">
         <button class="boton-volver-fuera" onclick="cerrarAjustes()">&#10140;</button>
-
         <div class="ajustes-box">
             <h2>AJUSTES DE SISTEMA</h2>
             <div class="opcion-ajuste">
@@ -189,6 +223,20 @@
     const textoDialogo = document.getElementById("typewriterText");
     const btnVolverJuego = document.getElementById("btn-volver-juego");
 
+    // --- VARIABLES NUEVAS PARA EL MINIJUEGO ---
+    const capaMini = document.getElementById("capa-minijuego");
+    const teclaDisplay = document.getElementById("tecla-display");
+    const barMini = document.getElementById("bar-mini");
+    const imgMini = document.getElementById("img-mini");
+    const imgCountText = document.getElementById("img-count");
+    const puntosCirculo = document.querySelectorAll(".punto");
+
+    let miniActivo = false;
+    let letraActual = '';
+    let teclasLogradas = 0;
+    let imagenesLogradas = 0;
+    let tiempoMini = 100;
+
     canvas.width = 1000;
     canvas.height = 550;
 
@@ -214,13 +262,45 @@
         }
     }
 
+    // MODIFICADO: Ahora al cerrar el diálogo inicia el minijuego
     boxDialogo.addEventListener('click', () => {
         boxDialogo.classList.add("oculto");
         dialogoActivo = false;
         dialogoCompletado = true; 
         textoDialogo.innerHTML = "";
         indexTexto = 0;
+        iniciarMiniJuego(); // <--- Lanzamos el minijuego aquí
     });
+
+    // --- LÓGICA DEL MINIJUEGO ---
+    function iniciarMiniJuego() {
+        capaMini.classList.remove("oculto");
+        miniActivo = true;
+        teclasLogradas = 0;
+        imagenesLogradas = 0;
+        nuevaLetra();
+        bucleTimerMini();
+    }
+
+    function nuevaLetra() {
+        const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        letraActual = abc[Math.floor(Math.random() * abc.length)];
+        teclaDisplay.innerText = letraActual;
+    }
+
+    function bucleTimerMini() {
+        if (!miniActivo) return;
+        tiempoMini -= 0.6; // Velocidad del tiempo
+        barMini.style.width = tiempoMini + "%";
+
+        if (tiempoMini <= 0) {
+            miniActivo = false;
+            alert("CONEXIÓN PERDIDA");
+            location.reload();
+        } else {
+            requestAnimationFrame(bucleTimerMini);
+        }
+    }
 
     const jugador = {
         x: 100, y: 230,
@@ -231,10 +311,46 @@
     const teclas = {};
     window.addEventListener("keydown", (e) => {
         teclas[e.code] = true;
+        
+        // Acción de hablar
         if (e.code === "KeyE" && !avisoE.classList.contains("oculto") && !dialogoActivo && !dialogoCompletado) {
             iniciarDialogo();
         }
+
+        // Lógica del minijuego cuando está activo
+        if (miniActivo) {
+            let letraPresionada = e.key.toUpperCase();
+            if (letraPresionada === letraActual) {
+                teclasLogradas++;
+                tiempoMini = 100; // Recarga tiempo al acertar
+                
+                if (teclasLogradas === 5) {
+                    imagenesLogradas++;
+                    teclasLogradas = 0;
+                    imgCountText.innerText = imagenesLogradas;
+                    imgMini.src = `https://picsum.photos/400/300?sig=${Math.random()}`;
+                    
+                    if (imagenesLogradas === 3) {
+                        miniActivo = false;
+                        capaMini.classList.add("oculto");
+                        alert("¡GANASTE!");
+                    }
+                }
+                
+                // Actualizar círculos visuales
+                puntosCirculo.forEach((p, i) => {
+                    p.classList.toggle("lleno", i < teclasLogradas);
+                });
+                nuevaLetra();
+            } else if (letraPresionada.length === 1 && /[A-Z]/.test(letraPresionada)) {
+                // Si se equivoca, reinicia los 5 pasos actuales
+                teclasLogradas = 0;
+                puntosCirculo.forEach(p => p.classList.remove("lleno"));
+                nuevaLetra();
+            }
+        }
     });
+
     window.addEventListener("keyup", (e) => teclas[e.code] = false);
 
     function abrirAjustes() {
@@ -288,7 +404,7 @@
     }
 
     function actualizar() {
-        if (!juegoActivo || dialogoActivo) return;
+        if (!juegoActivo || dialogoActivo || miniActivo) return; // Se pausa si el minijuego está activo
         let estaMoviendose = false;
         if (teclas["ArrowRight"]) { scrollFondo -= 5; estaMoviendose = true; }
         if (teclas["ArrowLeft"]) { scrollFondo += 5; estaMoviendose = true; }
