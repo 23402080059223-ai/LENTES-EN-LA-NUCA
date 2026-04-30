@@ -200,7 +200,7 @@
 
     <div id="dialogueBox" class="dialogue-container oculto">
         <div id="retrato" class="retrato-contenedor">
-            <img src="clauicon.png" class="retrato-img">
+            <img id="imgRetrato" src="clauicon.png" class="retrato-img">
         </div>
         <div class="character-name" id="charName">Claudia:</div>
         <p class="message-text" id="typewriterText"></p>
@@ -218,6 +218,8 @@
     const avisoE = document.getElementById("interaccion-aviso");
     const boxDialogo = document.getElementById("dialogueBox");
     const textoDialogo = document.getElementById("typewriterText");
+    const nombreDialogo = document.getElementById("charName");
+    const imgRetrato = document.getElementById("imgRetrato");
     const btnVolverJuego = document.getElementById("btn-volver-juego");
 
     // --- AUDIO ---
@@ -238,6 +240,11 @@
     let teclasLogradas = 0;
     let imagenesLogradas = 0;
     let tiempoMini = 100;
+
+    // --- SISTEMA DE DIÁLOGOS ---
+    let mensajeActual = "";
+    let personajeActual = "";
+    let retratoActual = "";
 
     function ajustarVolumen() {
         const vol = document.getElementById("slider-volumen").value;
@@ -263,24 +270,26 @@
     let dialogoCompletado = false; 
     let scrollFondo = 0;
     let indexTexto = 0; 
-    const mensaje = "Eric, amigo mío. Un entrenador de tanto calibre merecía ver esto en primera fila.";
 
     function typeWriter() {
-        if (indexTexto < mensaje.length) {
-            textoDialogo.innerHTML += mensaje.charAt(indexTexto);
+        if (indexTexto < mensajeActual.length) {
+            textoDialogo.innerHTML += mensajeActual.charAt(indexTexto);
             indexTexto++;
             setTimeout(typeWriter, 40);
         }
     }
 
-    // Al cerrar el diálogo, se activa el minijuego
     boxDialogo.addEventListener('click', () => {
         boxDialogo.classList.add("oculto");
         dialogoActivo = false;
-        dialogoCompletado = true; 
         textoDialogo.innerHTML = "";
         indexTexto = 0;
-        iniciarMiniJuego(); // Lanzar minijuego
+        
+        // Solo Claudia activa el minijuego
+        if (personajeActual === "Claudia:") {
+            dialogoCompletado = true; 
+            iniciarMiniJuego(); 
+        }
     });
 
     // --- FUNCIONES DEL MINIJUEGO ---
@@ -323,12 +332,24 @@
     window.addEventListener("keydown", (e) => {
         teclas[e.code] = true;
         
-        // Hablar con E
-        if (e.code === "KeyE" && !avisoE.classList.contains("oculto") && !dialogoActivo && !dialogoCompletado) {
-            iniciarDialogo();
+        // Lógica de interacción con E
+        if (e.code === "KeyE" && !avisoE.classList.contains("oculto") && !dialogoActivo) {
+            // ZONA 1: CLAUDIA
+            if (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado) {
+                personajeActual = "Claudia:";
+                mensajeActual = "Eric, amigo mío. Un entrenador de tanto calibre merecía ver esto en primera fila.";
+                retratoActual = "clauicon.png";
+                iniciarDialogo();
+            }
+            // ZONA 2: NUEVO PERSONAJE / INTERACCIÓN
+            else if (scrollFondo < -1300 && scrollFondo > -1600) {
+                personajeActual = "Eric:";
+                mensajeActual = "¿Qué está pasando con el sistema? Siento una interferencia extraña en el código...";
+                retratoActual = "ericicon.png"; // Asegúrate de tener esta imagen o usa clauicon.png para probar
+                iniciarDialogo();
+            }
         }
 
-        // Lógica de entrada del minijuego
         if (miniActivo) {
             let letraPresionada = e.key.toUpperCase();
             if (letraPresionada === letraActual) {
@@ -396,6 +417,8 @@
 
     function iniciarDialogo() {
         dialogoActivo = true;
+        nombreDialogo.innerText = personajeActual;
+        imgRetrato.src = retratoActual;
         boxDialogo.classList.remove("oculto");
         avisoE.classList.add("oculto"); 
         typeWriter();
@@ -435,7 +458,11 @@
             imgPersonajeActual = imgQuieta;
         }
 
-        if (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado) {
+        // CONTROL DE SEÑALES DE INTERACCIÓN
+        const zona1 = (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado);
+        const zona2 = (scrollFondo < -1300 && scrollFondo > -1600);
+
+        if (zona1 || zona2) {
             avisoE.classList.remove("oculto");
         } else {
             avisoE.classList.add("oculto");
