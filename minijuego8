@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Misión Final: El Núcleo - Protocolo Final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Press Start 2P', cursive;
+            color: #ff0000;
+        }
+
+        #contenedor-final {
+            width: 600px;
+            background: #050000;
+            border: 4px double #ff0000;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 30px #550000;
+        }
+
+        canvas {
+            background: #000;
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #300;
+        }
+
+        #status {
+            font-size: 12px;
+            margin-bottom: 10px;
+            height: 30px;
+            text-shadow: 2px 2px #000;
+        }
+
+        .alerta {
+            font-size: 8px;
+            color: #ff5555;
+            margin-top: 10px;
+            animation: parpadeo 1s infinite;
+        }
+
+        @keyframes parpadeo {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        button {
+            background: #300;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            padding: 15px 30px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { 
+            background: #ff0000; 
+            color: #000; 
+            box-shadow: 0 0 20px #ff0000; 
+        }
+    </style>
+</head>
+<body>
+
+<div id="contenedor-final">
+    <div style="font-size: 16px; letter-spacing: 2px;">PROTOCOLO FINAL</div>
+    <div id="status">Espera la sincronización...</div>
+
+    <canvas id="canvasFinal" width="400" height="400"></canvas>
+
+    <div class="alerta">ADVERTENCIA: ERROR CRÍTICO DETECTADO</div>
+    <br>
+    
+    <button id="btn-inicio" onclick="iniciarMisionFinal()">INICIAR SECUENCIA</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvasFinal');
+    const ctx = canvas.getContext('2d');
+    const statusTxt = document.getElementById('status');
+    const btnInicio = document.getElementById('btn-inicio');
+
+    let juegoActivo = false;
+    let anguloAnillos = [0, 0, 0];
+    
+    // --- VELOCIDADES AUMENTADAS ---
+    // Subimos los valores para que el giro sea más rápido
+    let velocidades = [0.04, -0.05, 0.06]; 
+    let proyectil = { activo: false, y: 200, radio: 5, v: 10 }; // Proyectil ligeramente más veloz para compensar
+    
+    const radioAnillos = [70, 110, 150];
+    const apertura = Math.PI / 2; // Mantenemos el hueco de 90 grados
+
+    function iniciarMisionFinal() {
+        juegoActivo = true;
+        btnInicio.style.display = 'none';
+        statusTxt.innerText = "¡DISPARA (ESPACIO/CLIC)!";
+        statusTxt.style.color = "#ff0000";
+        proyectil.activo = false;
+        proyectil.y = 200;
+        bucle();
+    }
+
+    function disparar() {
+        if (juegoActivo && !proyectil.activo) {
+            proyectil.activo = true;
+        }
+    }
+
+    window.addEventListener('keydown', (e) => { if(e.code === 'Space') disparar(); });
+    canvas.addEventListener('mousedown', disparar);
+
+    function bucle() {
+        if (!juegoActivo) return;
+        actualizar();
+        dibujar();
+        requestAnimationFrame(bucle);
+    }
+
+    function actualizar() {
+        for(let i=0; i<3; i++) {
+            anguloAnillos[i] += velocidades[i];
+        }
+
+        if (proyectil.activo) {
+            proyectil.y += proyectil.v;
+
+            for(let i=0; i<3; i++) {
+                let dist = proyectil.y - 200;
+                if (dist >= radioAnillos[i] - 8 && dist <= radioAnillos[i] + 8) {
+                    let anguloNormalizado = (anguloAnillos[i] % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+                    let metaAngulo = (Math.PI / 2); 
+                    
+                    let diferencia = Math.abs(anguloNormalizado - metaAngulo);
+                    if (diferencia > apertura / 2 && diferencia < (Math.PI * 2 - apertura / 2)) {
+                        perder();
+                        return;
+                    }
+                }
+            }
+
+            if (proyectil.y > 400) ganar();
+        }
+    }
+
+    function dibujar() {
+        ctx.clearRect(0, 0, 400, 400);
+        ctx.lineWidth = 10;
+        
+        ctx.fillStyle = proyectil.activo ? "#ff0000" : "#550000";
+        ctx.beginPath();
+        ctx.arc(200, 200, 20, 0, Math.PI * 2);
+        ctx.fill();
+
+        for(let i=0; i<3; i++) {
+            ctx.strokeStyle = "#300";
+            ctx.beginPath();
+            ctx.arc(200, 200, radioAnillos[i], 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.strokeStyle = "#ff0000";
+            ctx.beginPath();
+            ctx.arc(200, 200, radioAnillos[i], anguloAnillos[i] + apertura/2, anguloAnillos[i] - apertura/2);
+            ctx.stroke();
+        }
+
+        if (proyectil.activo) {
+            ctx.fillStyle = "#fff";
+            ctx.beginPath();
+            ctx.arc(200, proyectil.y, proyectil.radio, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function ganar() {
+        juegoActivo = false;
+        statusTxt.innerText = "SISTEMA VULNERADO - ACCESO TOTAL";
+        statusTxt.style.color = "#00ff00";
+        setTimeout(() => {
+            alert("¡PROTOCOLO FINAL COMPLETADO!\nCódigo: 0000");
+            reiniciar();
+        }, 100);
+    }
+
+    function perder() {
+        proyectil.activo = false;
+        proyectil.y = 200;
+        statusTxt.innerText = "COLISIÓN: REINTENTANDO";
+        statusTxt.style.color = "#ffaa00";
+    }
+
+    function reiniciar() {
+        juegoActivo = false;
+        btnInicio.style.display = 'inline-block';
+        btnInicio.innerText = "REINICIAR SECUENCIA";
+    }
+</script>
+
+</body>
+</html>
