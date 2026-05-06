@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Minijuego: Descifrador de Datos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Press Start 2P', cursive;
+            color: #00ff00;
+        }
+
+        #contenedor-descifrador {
+            width: 400px;
+            background: #000;
+            border: 4px solid #00ff00;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        .grid-intentos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .celda {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            background: #111;
+        }
+
+        /* Colores de las pistas */
+        .correcto { background: #008800 !important; border-color: #00ff00 !important; color: white; }
+        .posicion-erronea { background: #888800 !important; border-color: #ffff00 !important; color: white; }
+        .inexistente { background: #333 !important; border-color: #555 !important; color: #777; }
+
+        input {
+            width: 150px;
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        #status { font-size: 8px; margin-top: 15px; color: #00aa00; line-height: 1.5; }
+
+        .historial {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border-top: 1px solid #004400;
+            padding-top: 10px;
+        }
+
+        button {
+            margin-top: 15px;
+            background: #004400;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+        }
+
+        button:hover { background: #00ff00; color: #000; }
+    </style>
+</head>
+<body>
+
+<div id="contenedor-descifrador">
+    <div style="font-size: 12px;">CRACKING TOOL V.2.0</div>
+    <div id="status">INGRESA 4 NÚMEROS (0-9)<br>ADIVINA LA LLAVE MAESTRA</div>
+
+    <div class="grid-intentos" id="display-actual">
+        <div class="celda">-</div>
+        <div class="celda">-</div>
+        <div class="celda">-</div>
+        <div class="celda">-</div>
+    </div>
+
+    <input type="text" id="input-codigo" maxlength="4" placeholder="????" autocomplete="off">
+    <br>
+    <button onclick="intentarDescifrar()">ANALIZAR</button>
+
+    <div class="historial" id="historial-intentos">
+        </div>
+</div>
+
+<script>
+    let codigoSecreto = "";
+    let intentosRestantes = 6;
+    let juegoActivo = true;
+
+    // Generar código de 4 dígitos aleatorios
+    function generarCodigo() {
+        codigoSecreto = "";
+        for(let i=0; i<4; i++) {
+            codigoSecreto += Math.floor(Math.random() * 10).toString();
+        }
+        console.log("Admin Cheat: " + codigoSecreto); // Por si quieres hacer trampa para probar
+    }
+
+    function intentarDescifrar() {
+        const input = document.getElementById('input-codigo');
+        const intento = input.value;
+
+        if (intento.length !== 4 || isNaN(intento)) {
+            alert("Ingresa exactamente 4 números");
+            return;
+        }
+
+        procesarIntento(intento);
+        input.value = "";
+    }
+
+    function procesarIntento(intento) {
+        const historial = document.getElementById('historial-intentos');
+        const row = document.createElement('div');
+        row.className = 'grid-intentos';
+        
+        let tempCodigo = codigoSecreto.split('');
+        let resultado = new Array(4).fill('inexistente');
+        let intentoArr = intento.split('');
+
+        // Primera pasada: Buscar correctos (Verde)
+        for (let i = 0; i < 4; i++) {
+            if (intentoArr[i] === tempCodigo[i]) {
+                resultado[i] = 'correcto';
+                tempCodigo[i] = null; // Marcamos como usado
+                intentoArr[i] = undefined;
+            }
+        }
+
+        // Segunda pasada: Buscar en posición errónea (Amarillo)
+        for (let i = 0; i < 4; i++) {
+            if (intentoArr[i] !== undefined) {
+                let index = tempCodigo.indexOf(intentoArr[i]);
+                if (index !== -1) {
+                    resultado[i] = 'posicion-erronea';
+                    tempCodigo[index] = null;
+                }
+            }
+        }
+
+        // Crear las celdas visuales en el historial
+        for (let i = 0; i < 4; i++) {
+            const div = document.createElement('div');
+            div.className = `celda ${resultado[i]}`;
+            div.innerText = intento[i];
+            row.appendChild(div);
+        }
+
+        historial.prepend(row); // Agrega el intento al principio de la lista
+
+        if (intento === codigoSecreto) {
+            ganar();
+        } else {
+            intentosRestantes--;
+            if (intentosRestantes <= 0) perder();
+        }
+    }
+
+    function ganar() {
+        juegoActivo = false;
+        document.getElementById('status').innerHTML = "ACCESO CONCEDIDO<br>SISTEMA VULNERADO";
+        document.getElementById('status').style.color = "#fff";
+        setTimeout(() => alert("CÓDIGO DE SEGURIDAD DESCIFRADO: 2901"), 500);
+    }
+
+    function perder() {
+        juegoActivo = false;
+        alert("SISTEMA BLOQUEADO. El código era: " + codigoSecreto);
+        location.reload();
+    }
+
+    // Permitir presionar Enter
+    document.getElementById('input-codigo').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') intentarDescifrar();
+    });
+
+    generarCodigo();
+</script>
+
+</body>
+</html>
