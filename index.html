@@ -296,14 +296,14 @@
 
     const jugador = { x: 100, y: 200, ancho: 280, alto: 280, vy: 0, gravedad: 0.6 };
 
-    // --- SISTEMA DE VUELTAS CORREGIDO ---
+    
     function manejarVueltas() {
         // Detecta si hemos avanzado lo suficiente para dar una vuelta
         if (Math.abs(scrollFondo) >= (contadorVueltas + 1) * canvas.width) {
             contadorVueltas++;
             console.log("Vuelta: " + contadorVueltas + " Fase: " + faseJuego);
 
-            if (contadorVueltas >= 2) {
+            if (contadorVueltas >= 5) {
                 if (faseJuego === 1) {
                     ejecutarPantallaNegra();
                 } else if (faseJuego === 2) {
@@ -321,10 +321,12 @@
     setTimeout(() => {
         pNegra.style.display = "none";
         imgFondoActual.src = 'fondofeo.jpeg'; 
-        contadorVueltas = 0; // Reiniciamos contador para que cuente 2 vueltas más
+        imgNPC.src = 'narc1.png';
+        imgNPC2.src = 'nac2.png';
+        contadorVueltas = 0; 
         scrollFondo = 0;
         
-        faseJuego = 2; // <--- ESTA LÍNEA ES VITAL PARA QUE LA PRÓXIMA VEZ SALGA EL VIDEO
+        faseJuego = 2; 
         
         juegoActivo = true;
         musicaFondo.play();
@@ -337,14 +339,11 @@
     juegoActivo = false;
     musicaFondo.pause();
     
-    // Mostramos el video y lo traemos al frente
     videoF.style.display = "block";
-    
-    // Forzamos que el video esté al principio y se reproduzca
     videoF.currentTime = 0;
     videoF.volume = 1.0; 
 
-    // Intentamos reproducir
+    
     const playPromise = videoF.play();
 
     if (playPromise !== undefined) {
@@ -352,7 +351,7 @@
             console.log("Video reproduciéndose correctamente");
         }).catch(error => {
             console.log("El navegador bloqueó el video. Intentando reproducir sin sonido...");
-            videoF.muted = true; // Si falla por políticas de audio, lo silenciamos para que al menos se vea
+            videoF.muted = true; 
             videoF.play();
         });
     }
