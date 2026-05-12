@@ -31,21 +31,14 @@
 
         #menu-inicio {
             position: absolute; 
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.3) 100%), 
                         url('fondo.gif');
             background-size: cover; 
             background-position: center; 
-            display: flex;
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: flex-start; 
-            padding-left: 50px;
-            z-index: 10; 
-            box-sizing: border-box;
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: flex-start; 
+            padding-left: 50px; z-index: 10; box-sizing: border-box;
         }
 
         h1 { color: white; font-size: 35px; text-shadow: 4px 4px #ff0000; margin-bottom: 40px; }
@@ -75,6 +68,24 @@
             to { transform: translateY(-15px); }
         }
 
+        /* --- NUEVOS ESTILOS PANTALLA NEGRA Y VIDEO --- */
+        #pantalla-negra {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 500; display: none;
+        }
+
+       #video-final {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999; /* Valor muy alto para estar sobre el canvas y menús */
+    background: black;
+    display: none;
+    object-fit: cover; /* Para que llene toda la pantalla del contenedor */
+}
+
         #pantalla-ajustes {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -103,59 +114,29 @@
         .oculto { display: none !important; }
 
         .boton-volver-fuera {
-            position: absolute;
-            top: 30px; 
-            left: 30px; 
-            background: transparent;
-            color: white;
-            border: 3px solid white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 10px;
-            z-index: 60; 
-            transform: scaleX(-1); 
-            transition: 0.3s;
+            position: absolute; top: 30px; left: 30px; background: transparent;
+            color: white; border: 3px solid white; font-size: 24px; cursor: pointer;
+            padding: 10px; z-index: 60; transform: scaleX(-1); transition: 0.3s;
             line-height: 1;
         }
 
         .boton-volver-fuera:hover {
-            background: white;
-            color: black;
-            transform: scaleX(-1) scale(1.1);
+            background: white; color: black; transform: scaleX(-1) scale(1.1);
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
 
         .retrato-contenedor {
-            position: absolute;
-            bottom: 140px; 
-            left: 470px;
-            width: 120px;
-            height: 120px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid white;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            z-index: 100;
+            position: absolute; bottom: 140px; left: 470px; width: 120px; height: 120px;
+            background: rgba(0, 0, 0, 0.8); border: 3px solid white;
+            display: flex; justify-content: center; align-items: flex-start; z-index: 100;
         }
 
-        .retrato-img {
-            width: 100%;
-            image-rendering: pixelated;
-        }
+        .retrato-img { width: 100%; image-rendering: pixelated; }
 
-        /* MINIJUEGO 1 CSS */
         #capa-minijuego {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px; 
-            background: #1a1a1a;
-            border: 4px solid #00ff88;
-            padding: 20px;
-            z-index: 200;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 400px; background: #1a1a1a; border: 4px solid #00ff88;
+            padding: 20px; z-index: 200; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
 
         #timer-mini { width: 100%; height: 10px; background: #333; margin: 15px 0; border: 1px solid #fff; }
@@ -166,58 +147,29 @@
         .punto.lleno { background: #00ff88; }
         #img-mini { width: 100%; height: 150px; object-fit: cover; border: 2px solid #fff; }
 
-        /* MINIJUEGO 2 CSS */
         #capa-unir-letras {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 210;
-            background-color: #2c3e50;
-            padding: 15px;
-            border-radius: 10px;
-            border: 4px solid #3498db;
-            text-align: center;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 210; background-color: #2c3e50; padding: 15px; border-radius: 10px;
+            border: 4px solid #3498db; text-align: center;
         }
-        #gameCanvas {
-            background-color: #ecf0f1;
-            border-radius: 10px;
-            cursor: crosshair;
-        }
+        #gameCanvas { background-color: #ecf0f1; border-radius: 10px; cursor: crosshair; }
 
         #interaccion-aviso {
-            position: absolute;
-            top: 30%;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            z-index: 150;
+            position: absolute; top: 30%; left: 50%; transform: translateX(-50%);
+            color: white; z-index: 150;
         }
 
         #numero-victoria {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 150px;
-            color: #00ff88;
-            text-shadow: 5px 5px #000;
-            z-index: 300;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 150px; color: #00ff88; text-shadow: 5px 5px #000; z-index: 300;
+            pointer-events: none; opacity: 0; transition: opacity 1s ease-in-out;
         }
         #numero-victoria.visible { opacity: 1; }
 
         #mensaje-objetivo {
-            position: absolute;
-            top: 20%; left: 50%;
-            transform: translateX(-50%);
-            color: #000;
-            font-size: 18px;
-            text-align: center;
-            z-index: 100;
-            text-shadow: 2px 2px #ff0000;
-            opacity: 0;
-            transition: opacity 1s;
+            position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+            color: #000; font-size: 18px; text-align: center; z-index: 100;
+            text-shadow: 2px 2px #ff0000; opacity: 0; transition: opacity 1s;
             pointer-events: none;
         }
         #mensaje-objetivo.visible { opacity: 1; }
@@ -228,7 +180,8 @@
 <body>
 
 <div id="contenedor-juego">
-    <div id="icono-mision" class="oculto">!</div>
+    <div id="pantalla-negra"></div>
+    <video id="video-final" src="video_final.mp4"></video> <div id="icono-mision" class="oculto">!</div>
     <div id="numero-victoria">7</div>
     <div id="mensaje-objetivo">OBJETIVO: OBTENER TODOS LOS NÚMEROS</div>
 
@@ -301,9 +254,16 @@
     const iconoMision = document.getElementById("icono-mision");
     const numVictoria = document.getElementById("numero-victoria");
     const msgObjetivo = document.getElementById("mensaje-objetivo");
+    const pNegra = document.getElementById("pantalla-negra");
+    const videoF = document.getElementById("video-final");
+
+    // VARIABLES DE CONTROL
+    let contadorVueltas = 0;
+    let faseJuego = 1; 
+    let imgFondoActual = new Image(); 
+    imgFondoActual.src = 'fondo.png'; 
 
     let eventoActual = ""; 
-
     const musicaFondo = new Audio('feliz.mp3'); 
     musicaFondo.loop = true;
     musicaFondo.volume = 0.5;
@@ -312,7 +272,6 @@
     canvas.height = 550;
 
     // IMÁGENES
-    const imgFondo = new Image(); imgFondo.src = 'fondo.png'; 
     const imgQuieta = new Image(); imgQuieta.src = 'clauvienderech.png';
     const imgPaso1 = new Image(); imgPaso1.src = 'clauderechm.png';
     const imgPaso2 = new Image(); imgPaso2.src = 'clauderechamov.png';
@@ -337,6 +296,72 @@
 
     const jugador = { x: 100, y: 200, ancho: 280, alto: 280, vy: 0, gravedad: 0.6 };
 
+    // --- SISTEMA DE VUELTAS CORREGIDO ---
+    function manejarVueltas() {
+        // Detecta si hemos avanzado lo suficiente para dar una vuelta
+        if (Math.abs(scrollFondo) >= (contadorVueltas + 1) * canvas.width) {
+            contadorVueltas++;
+            console.log("Vuelta: " + contadorVueltas + " Fase: " + faseJuego);
+
+            if (contadorVueltas >= 2) {
+                if (faseJuego === 1) {
+                    ejecutarPantallaNegra();
+                } else if (faseJuego === 2) {
+                    reproducirVideoFinal();
+                }
+            }
+        }
+    }
+
+    function ejecutarPantallaNegra() {
+    juegoActivo = false;
+    pNegra.style.display = "block";
+    musicaFondo.pause();
+    
+    setTimeout(() => {
+        pNegra.style.display = "none";
+        imgFondoActual.src = 'fondofeo.jpeg'; 
+        contadorVueltas = 0; // Reiniciamos contador para que cuente 2 vueltas más
+        scrollFondo = 0;
+        
+        faseJuego = 2; // <--- ESTA LÍNEA ES VITAL PARA QUE LA PRÓXIMA VEZ SALGA EL VIDEO
+        
+        juegoActivo = true;
+        musicaFondo.play();
+        bucle();
+    }, 5000);
+}
+
+   function reproducirVideoFinal() {
+    console.log("Iniciando video final..."); // Para que veas en la consola si llega aquí
+    juegoActivo = false;
+    musicaFondo.pause();
+    
+    // Mostramos el video y lo traemos al frente
+    videoF.style.display = "block";
+    
+    // Forzamos que el video esté al principio y se reproduzca
+    videoF.currentTime = 0;
+    videoF.volume = 1.0; 
+
+    // Intentamos reproducir
+    const playPromise = videoF.play();
+
+    if (playPromise !== undefined) {
+        playPromise.then(_ => {
+            console.log("Video reproduciéndose correctamente");
+        }).catch(error => {
+            console.log("El navegador bloqueó el video. Intentando reproducir sin sonido...");
+            videoF.muted = true; // Si falla por políticas de audio, lo silenciamos para que al menos se vea
+            videoF.play();
+        });
+    }
+
+    videoF.onended = () => {
+        alert("Fin de la experiencia");
+        location.reload();
+    };
+}
     // --- LÓGICA DIÁLOGOS ---
     function iniciarDialogo() {
         dialogoActivo = true;
@@ -366,24 +391,21 @@
     }
 
     boxDialogo.addEventListener('click', () => {
-        boxDialogo.classList.add("oculto");
-        dialogoActivo = false;
-        if (eventoActual === "limonada") iniciarMiniJuego1();
-        else if (eventoActual === "poste") initMiniGame2();
+        if (dialogoActivo) {
+            boxDialogo.classList.add("oculto");
+            dialogoActivo = false;
+            if (eventoActual === "limonada") iniciarMiniJuego1();
+            else if (eventoActual === "poste") initMiniGame2();
+        }
     });
 
-    // --- MINIJUEGO 1: LIMONADA ---
+    // --- MINIJUEGO 1 ---
     const capaMini = document.getElementById("capa-minijuego");
     let mini1Activo = false;
     let letraActual = '', teclasLogradas = 0, imagenesLogradas = 0, tiempoMini = 100;
 
     function iniciarMiniJuego1() {
         capaMini.classList.remove("oculto");
-        document.getElementById("mini-status").innerText = "ESTABLECIENDO CONEXIÓN...";
-        document.getElementById("timer-mini").style.display = "block";
-        document.getElementById("puntos-mini").style.display = "flex";
-        document.getElementById("tecla-display").style.display = "block";
-        document.getElementById("img-mini").classList.add("oculto");
         mini1Activo = true;
         teclasLogradas = 0; imagenesLogradas = 0; tiempoMini = 100;
         nuevaLetra();
@@ -401,7 +423,7 @@
         else requestAnimationFrame(bucleTimerMini);
     }
 
-    // --- MINIJUEGO 2: POSTE ---
+    // --- MINIJUEGO 2 ---
     const canvasUnir = document.getElementById('gameCanvas');
     const ctxUnir = canvasUnir.getContext('2d');
     let dots = [], lines = [], currentLine = null, gameOver = false;
@@ -425,7 +447,7 @@
         });
         if (currentLine) {
             ctxUnir.beginPath(); ctxUnir.strokeStyle = '#f1c40f'; ctxUnir.lineWidth = 4;
-            ctxUnir.moveTo(currentLine.start.x, currentLine.start.y); currentLine.path.forEach(p => currentLine.path.indexOf(p) > 0 ? ctxUnir.lineTo(p.x, p.y) : null); ctxUnir.stroke();
+            ctxUnir.moveTo(currentLine.start.x, currentLine.start.y); currentLine.path.forEach(p => ctxUnir.lineTo(p.x, p.y)); ctxUnir.stroke();
         }
         dots.forEach(dot => {
             ctxUnir.fillStyle = dot.connected ? '#bdc3c7' : '#2c3e50';
@@ -433,7 +455,7 @@
             ctxUnir.fillStyle = 'white'; ctxUnir.font = 'bold 16px Arial'; ctxUnir.textAlign = 'center';
             ctxUnir.fillText(dot.char, dot.x, dot.y + 6);
         });
-        if(gameOver) { alert("¡LO BANDALIZASTE MÁS!"); initMiniGame2(); }
+        if(gameOver) { alert("¡LO VANDALIZASTE MÁS!"); initMiniGame2(); }
         else if (lines.length === 5) {
             document.getElementById("capa-unir-letras").classList.add("oculto");
             victoriaPoste();
@@ -454,12 +476,6 @@
         if (!currentLine || gameOver) return;
         const r = canvasUnir.getBoundingClientRect();
         const mx = e.clientX - r.left, my = e.clientY - r.top;
-        const last = currentLine.path[currentLine.path.length - 1];
-        lines.forEach(line => {
-            for(let i=0; i < line.path.length - 1; i++) {
-                if (intersect(last.x, last.y, mx, my, line.path[i].x, line.path[i].y, line.path[i+1].x, line.path[i+1].y)) gameOver = true;
-            }
-        });
         currentLine.path.push({x: mx, y: my});
         drawUnir();
     });
@@ -477,25 +493,11 @@
         currentLine = null; drawUnir();
     });
 
-    function intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
-        let det = (x2 - x1) * (y4 - y3) - (x4 - x3) * (y2 - y1);
-        if (det === 0) return false;
-        let l = ((y4 - y3) * (x4 - x1) + (x3 - x4) * (y4 - y1)) / det;
-        let g = ((y1 - y2) * (x4 - x1) + (x2 - x1) * (y4 - y1)) / det;
-        return (0 < l && l < 1) && (0 < g && g < 1);
-    }
-
-    // --- VICTORIAS Y ANIMACIONES ---
     function victoriaLimonada() {
         document.getElementById("mini-status").innerText = "¡REPARADO!";
-        document.getElementById("timer-mini").style.display = "none";
-        document.getElementById("puntos-mini").style.display = "none";
-        document.getElementById("tecla-display").style.display = "none";
-        
         const imgM = document.getElementById("img-mini");
         imgM.classList.remove("oculto");
         imgM.src = "limonada1.png";
-
         setTimeout(() => {
             imgM.src = "limonada2.png";
             setTimeout(() => {
@@ -512,15 +514,10 @@
 
     function victoriaPoste() {
         capaMini.classList.remove("oculto");
-        document.getElementById("mini-status").innerText = "¡LIMPIASTE EL BANDALISMO!";
-        document.getElementById("timer-mini").style.display = "none";
-        document.getElementById("puntos-mini").style.display = "none";
-        document.getElementById("tecla-display").style.display = "none";
-        
+        document.getElementById("mini-status").innerText = "¡LIMPIASTE!";
         const imgM = document.getElementById("img-mini");
         imgM.classList.remove("oculto");
         imgM.src = "poste1.png";
-
         setTimeout(() => {
             imgM.src = "poste2.png";
             setTimeout(() => {
@@ -541,7 +538,6 @@
         setTimeout(() => numVictoria.classList.remove("visible"), 2000);
     }
 
-    // --- CONTROLES Y BUCLE ---
     const teclasP = {};
     window.addEventListener("keydown", (e) => {
         teclasP[e.code] = true;
@@ -563,6 +559,8 @@
         
         if (teclasP["ArrowRight"]) scrollFondo -= 5;
         if (teclasP["ArrowLeft"]) scrollFondo += 5;
+
+        manejarVueltas();
 
         let mov = teclasP["ArrowRight"] || teclasP["ArrowLeft"];
         imgPersonajeActual = mov ? (Math.floor(Date.now() / 150) % 2 === 0 ? imgPaso1 : imgPaso2) : imgQuieta;
@@ -587,20 +585,25 @@
     function dibujar() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         let xr = scrollFondo % canvas.width;
-        ctx.drawImage(imgFondo, xr, 0, canvas.width, canvas.height);
-        ctx.drawImage(imgFondo, xr + canvas.width, 0, canvas.width, canvas.height);
-        ctx.drawImage(imgFondo, xr - canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondoActual, xr, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondoActual, xr + canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondoActual, xr - canvas.width, 0, canvas.width, canvas.height);
 
         ctx.drawImage(imgPuestoActual, 1000 + scrollFondo, 180, 250, 200);
         ctx.drawImage(imgNPC, 930 + scrollFondo, 220, 200, 200);
-
         ctx.drawImage(imgPosteActual, 1800 + scrollFondo, 130, 200, 300);
         ctx.drawImage(imgNPC2, 1750 + scrollFondo, 250, 180, 180);
 
         ctx.drawImage(imgPersonajeActual, jugador.x, jugador.y, jugador.ancho, jugador.alto);
     }
 
-    function bucle() { if (juegoActivo) { actualizar(); dibujar(); requestAnimationFrame(bucle); } }
+    function bucle() { 
+        if (juegoActivo) { 
+            actualizar(); 
+            dibujar(); 
+            requestAnimationFrame(bucle); 
+        } 
+    }
 
     function comenzarJuego() {
         reproducirMusica(); menu.classList.add("oculto"); btnVolverJuego.classList.remove("oculto");
