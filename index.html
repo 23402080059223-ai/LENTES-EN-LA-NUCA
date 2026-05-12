@@ -123,11 +123,17 @@
         .punto.lleno { background: #00ff88; }
         #img-mini { width: 100%; height: 150px; object-fit: cover; border: 2px solid #fff; }
 
+        /* Capa negra para el evento */
+        #pantalla-negra {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 1000; display: none;
+        }
     </style>
 </head>
 <body>
 
 <div id="contenedor-juego">
+    <div id="pantalla-negra"></div>
     <div id="icono-mision" class="oculto">!</div>
     <button id="btn-volver-juego" class="boton-volver-fuera oculto" onclick="volverAlMenu()">&#10140;</button>
 
@@ -150,7 +156,6 @@
 
      <div id="pantalla-ajustes" class="oculto">
         <button class="boton-volver-fuera" onclick="cerrarAjustes()">&#10140;</button>
-
         <div class="ajustes-box">
             <h2>AJUSTES DE SISTEMA</h2>
             <div class="opcion-ajuste">
@@ -194,18 +199,16 @@
     const nombreDialogo = document.getElementById("charName");
     const imgRetrato = document.getElementById("imgRetrato");
     const btnVolverJuego = document.getElementById("btn-volver-juego");
+    const pantallaNegra = document.getElementById("pantalla-negra");
 
-      // --- AUDIO ---
+    // --- AUDIO ---
     const musicaFondo = new Audio('feliz.mp3'); 
     musicaFondo.loop = true;
     musicaFondo.volume = 0.5;
-     function ajustarVolumen() {
+
+    function ajustarVolumen() {
         const vol = document.getElementById("slider-volumen").value;
         musicaFondo.volume = vol / 100;
-    }
-
-    function reproducirMusica() {
-        musicaFondo.play().catch(error => console.log("Esperando interacción para audio"));
     }
 
     const capaMini = document.getElementById("capa-minijuego");
@@ -227,7 +230,10 @@
     canvas.width = 1000;
     canvas.height = 550;
 
-    const imgFondo = new Image(); imgFondo.src = 'fondo.png'; 
+    // --- IMÁGENES ---
+    let imgFondoActual = new Image(); imgFondoActual.src = 'fondo.png'; 
+    const imgFondoNueva = 'fondofeo.jpeg'; 
+    
     const imgQuieta = new Image(); imgQuieta.src = 'clauvienderech.png';
     const imgPaso1 = new Image(); imgPaso1.src = 'clauderechm.png';
     const imgPaso2 = new Image(); imgPaso2.src = 'clauderechamov.png';
@@ -239,6 +245,9 @@
     let dialogoCompletado = false; 
     let scrollFondo = 0;
     let indexTexto = 0; 
+
+    // --- LÓGICA DE REPETICIÓN ---
+    let contadorVueltas = 0;
 
     function typeWriter() {
         if (indexTexto < mensajeActual.length) {
@@ -285,7 +294,7 @@
             alert("Falta cinta - REINTENTANDO");
             miniActivo = false;
             capaMini.classList.add("oculto");
-            dialogoCompletado = false; // Permite repetir el diálogo si falla
+            dialogoCompletado = false;
         } else {
             requestAnimationFrame(bucleTimerMini);
         }
@@ -296,22 +305,18 @@
 
     window.addEventListener("keydown", (e) => {
         teclas[e.code] = true;
-
-        // Lógica de diálogo
         if (e.code === "KeyE" && !avisoE.classList.contains("oculto") && !dialogoActivo && !miniActivo) {
             if (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado) {
                 personajeActual = "Claudia:";
                 mensajeActual = "Eric, amigo mío. Un entrenador de tanto calibre merecía ver esto en primera fila.";
                 retratoActual = "clauicon.png";
                 iniciarDialogo();
-            }
-             else if (scrollFondo < -1300 && scrollFondo > -1600) {
+            } else if (scrollFondo < -1300 && scrollFondo > -1600) {
                 personajeActual = "Eric:";
                 mensajeActual = "¿Qué está pasando con el sistema? Siento una interferencia...";
                 retratoActual = "ericicon.png";
                 iniciarDialogo();
-            }
-            else if (scrollFondo < -2300 && scrollFondo > -2600) {
+            } else if (scrollFondo < -2300 && scrollFondo > -2600) {
                 personajeActual = "Eric:";
                 mensajeActual = "Papaloteee... Ya te vi Papalote";
                 retratoActual = "ericicon.png";
@@ -319,11 +324,9 @@
             }
         }
 
-        // Lógica del MINIJUEGO
         if (miniActivo && e.key.toUpperCase() === letraActual) {
             teclasLogradas++;
             tiempoMini = Math.min(tiempoMini + 15, 100); 
-            
             if (teclasLogradas === 5) {
                 imagenesLogradas++;
                 teclasLogradas = 0;
@@ -367,14 +370,21 @@
         if (teclas["ArrowRight"]) { scrollFondo -= 4; mov = true; }
         if (teclas["ArrowLeft"]) { scrollFondo += 4; mov = true; }
 
+        // --- DETECTAR REPETICIÓN DEL FONDO (10 VECES) ---
+        if (Math.abs(scrollFondo) >= (contadorVueltas + 1) * canvas.width) {
+            contadorVueltas++;
+            if (contadorVueltas >= 5) {
+                eventoPantallaNegra();
+            }
+        }
+
         imgPersonajeActual = mov ? (Math.floor(Date.now() / 150) % 2 === 0 ? imgPaso1 : imgPaso2) : imgQuieta;
 
         const z1 = (scrollFondo < -300 && scrollFondo > -600 && !dialogoCompletado);
         const z2 = (scrollFondo < -1300 && scrollFondo > -1600);
         const z3 = (scrollFondo < -2300 && scrollFondo > -2600);
 
-
-        if (z1  || z2 || z3) {
+        if (z1 || z2 || z3) {
             avisoE.classList.remove("oculto");
             iconoMision.classList.remove("oculto");
             iconoMision.style.left = (jugador.x + 330) + "px";
@@ -390,15 +400,30 @@
         if (jugador.y > 230) { jugador.y = 230; jugador.vy = 0; jugador.saltando = false; }
     }
 
+    function eventoPantallaNegra() {
+        juegoActivo = false;
+        pantallaNegra.style.display = "block";
+        
+        setTimeout(() => {
+            // Cambio de imagen de fondo al terminar los 5 segundos
+            imgFondoActual.src = imgFondoNueva;
+            
+            pantallaNegra.style.display = "none";
+            juegoActivo = true;
+            contadorVueltas = 0; // Reinicia contador
+            scrollFondo = 0;     // Reinicia posición si prefieres
+            bucle();
+        }, 5000);
+    }
+
     function dibujar() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         let xRel = scrollFondo % canvas.width;
         
-        ctx.drawImage(imgFondo, xRel, 0, canvas.width, canvas.height);
-        ctx.drawImage(imgFondo, xRel + canvas.width, 0, canvas.width, canvas.height);
-        ctx.drawImage(imgFondo, xRel - canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondoActual, xRel, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondoActual, xRel + canvas.width, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgFondoActual, xRel - canvas.width, 0, canvas.width, canvas.height);
         
-        // Imagen que se mueve con el fondo en la Zona 1
         if (!dialogoCompletado) {
             ctx.drawImage(imgZona1, 550 + scrollFondo, 200, 230, 200);
         }
