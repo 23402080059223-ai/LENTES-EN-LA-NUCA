@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Seguridad - Caja Fuerte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        #interfaz-seguridad {
+            width: 320px;
+            background: #1a1a1a;
+            border: 6px solid #444;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 10px #000;
+        }
+
+        #pantalla-codigo {
+            width: 100%;
+            height: 60px;
+            background: #051a05;
+            border: 3px solid #222;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #00ff00;
+            font-size: 18px;
+            letter-spacing: 4px;
+            box-shadow: inset 0 0 15px #000;
+        }
+
+        .teclado-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .boton-num {
+            height: 60px;
+            background: #333;
+            border: 2px solid #555;
+            border-bottom: 5px solid #111;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .boton-num:active {
+            border-bottom: 2px solid #111;
+            transform: translateY(3px);
+            background: #444;
+        }
+
+        .boton-accion {
+            grid-column: span 3;
+            margin-top: 10px;
+            height: 50px;
+            font-size: 12px;
+            background: #441111;
+            color: #ff5555;
+            border: 2px solid #662222;
+            cursor: pointer;
+        }
+
+        #final-animacion {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            z-index: 1000;
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+        }
+
+        .glitch {
+            font-size: 20px;
+            animation: flash 0.2s infinite;
+        }
+
+        @keyframes flash {
+            0% { color: #00ff00; }
+            50% { color: #fff; }
+            100% { color: #00ff00; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="interfaz-seguridad">
+    <div style="font-size: 10px; color: #00ff00; margin-bottom: 15px; text-align: center;">INGRESE EL CÓDIGO</div>
+    <div id="pantalla-codigo">--------</div>
+    
+    <div class="teclado-grid">
+        <button class="boton-num" onclick="presionarTecla('1')">1</button>
+        <button class="boton-num" onclick="presionarTecla('2')">2</button>
+        <button class="boton-num" onclick="presionarTecla('3')">3</button>
+        <button class="boton-num" onclick="presionarTecla('4')">4</button>
+        <button class="boton-num" onclick="presionarTecla('5')">5</button>
+        <button class="boton-num" onclick="presionarTecla('6')">6</button>
+        <button class="boton-num" onclick="presionarTecla('7')">7</button>
+        <button class="boton-num" onclick="presionarTecla('8')">8</button>
+        <button class="boton-num" onclick="presionarTecla('9')">9</button>
+        <div style="grid-column: 2">
+            <button class="boton-num" style="width: 100%" onclick="presionarTecla('0')">0</button>
+        </div>
+        
+        <button class="boton-accion" onclick="borrarTodo()">BORRAR ENTRADA</button>
+    </div>
+</div>
+
+<div id="final-animacion">
+    <h1 class="glitch">CAJA FUERTE ABIERTA</h1>
+    <p>ACCEDIENDO A LOS ARCHIVOS CLASIFICADOS...</p>
+    </div>
+
+<script>
+    const codigoCorrecto = "00760067";
+    let entradaActual = "";
+    const pantalla = document.getElementById("pantalla-codigo");
+    const capaFinal = document.getElementById("final-animacion");
+
+    function presionarTecla(num) {
+        if (entradaActual.length < 8) {
+            entradaActual += num;
+            actualizarPantalla();
+            
+            if (entradaActual.length === 8) {
+                setTimeout(verificarCodigo, 300);
+            }
+        }
+    }
+
+    function actualizarPantalla() {
+        pantalla.innerText = entradaActual.padEnd(8, "-");
+        pantalla.style.color = "#00ff00";
+    }
+
+    function borrarTodo() {
+        entradaActual = "";
+        actualizarPantalla();
+    }
+
+    function verificarCodigo() {
+        if (entradaActual === codigoCorrecto) {
+            pantalla.innerText = "CORRECTO";
+            pantalla.style.color = "#00ff00";
+            setTimeout(dispararFinal, 1000);
+        } else {
+            pantalla.innerText = "ERROR";
+            pantalla.style.color = "#ff0000";
+            
+            pantalla.style.transform = "translateX(5px)";
+            setTimeout(() => pantalla.style.transform = "translateX(-5px)", 50);
+            setTimeout(() => {
+                pantalla.style.transform = "translateX(0)";
+                alert("Código incorrecto. Inténtelo de nuevo.");
+                borrarTodo();
+            }, 500);
+        }
+    }
+
+    function dispararFinal() {
+        capaFinal.style.display = "block";
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key >= '0' && e.key <= '9') presionarTecla(e.key);
+        if (e.key === 'Backspace') borrarTodo();
+    });
+</script>
+
+</body>
+</html>
